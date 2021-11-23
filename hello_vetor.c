@@ -23,8 +23,8 @@ void * tarefa (void * arg) {
        }
        break;
    }
-   //vetor[ident-1] = ident * ident;
-  // printf("Ola, sou a thread %d!\n", ident);
+  
+  
    pthread_exit(NULL);
 }
 
