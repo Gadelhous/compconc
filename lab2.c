@@ -54,9 +54,9 @@ int main(int argc, char* argv[]) {
    int dim; //dimensao da matriz de entrada
    pthread_t *tid; //identificadores das threads no sistema
    tArgs *args; //identificadores locais das threads e dimensao
-   double inicio, fim, delta;
+   double inicio, fim, delta,tConc,tSeq;
    
-   GET_TIME(inicio);
+   //GET_TIME(inicio);
    //leitura e avaliacao dos parametros de entrada
    if(argc<3) {
       printf("Digite: %s <dimensao da matriz> <numero de threads>\n", argv[0]);
@@ -85,8 +85,8 @@ int main(int argc, char* argv[]) {
          rseq[i*dim+j] = 0;
       }
    }
-   GET_TIME(fim);
-   delta = fim - inicio;
+   //GET_TIME(fim);
+   //delta = fim - inicio;
    //printf("Tempo inicializacao:%lf\n", delta);
    
    GET_TIME(inicio);
@@ -95,6 +95,7 @@ int main(int argc, char* argv[]) {
   
    GET_TIME(fim);
    delta = fim - inicio;
+   tSeq = delta;
    printf("Tempo para a multiplicacao sequencial: %lf\n", delta);
 
 
@@ -119,6 +120,7 @@ int main(int argc, char* argv[]) {
    }
    GET_TIME(fim)   
    delta = fim - inicio;
+   tConc = delta;
    printf("Tempo para a multiplicacao concorrente :%lf\n", delta);
 
    //exibicao dos resultados
@@ -170,16 +172,17 @@ int main(int argc, char* argv[]) {
    */
 
    //liberacao da memoria
-   GET_TIME(inicio);
+   //GET_TIME(inicio);
    free(mat1);
    free(mat2);
    free(rconc);
    free(rseq);
    free(args);
    free(tid);
-   GET_TIME(fim)   
-   delta = fim - inicio;
+   //GET_TIME(fim)   
+   //delta = fim - inicio;
    //printf("Tempo finalizacao:%lf\n", delta);
+   printf("O desempenho da solucao foi de %lf\n", tSeq/tConc);
 
    return 0;
 }
