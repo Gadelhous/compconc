@@ -41,14 +41,12 @@ void  multSeq(float *a, float *b,int n){
 
 int checaMatriz(float *a, float *b,int n){
    for(int i = 0; i<n;i++){
-        for(int j = 0; j<n;j++){
-            if(rconc[i*n+j] !=  rseq[i*n+j]){
-               puts("ERRO-- As duas matrizes não são iguais!");
-               return 2;
-            }
-         }
+      for(int j = 0; j<n;j++){
+         if(rconc[i*n+j] !=  rseq[i*n+j]){
+            return 2;
+         }   
       }
-   puts("As duas matrizes são iguais.");
+   }
    return 1;
 }
 //fluxo principal
@@ -81,8 +79,8 @@ int main(int argc, char* argv[]) {
    //inicializacao das estruturas de dados de entrada e saida
    for(int i=0; i<dim; i++) {
       for(int j=0; j<dim; j++){
-         mat1[i*dim+j] = rand() % 100;    //equivalente mat1[i][j]
-         mat2[i*dim+j] = rand() % 100;    //equivalente mat2[i][j]    
+         mat1[i*dim+j] = rand();    //equivalente mat1[i][j]
+         mat2[i*dim+j] = rand();    //equivalente mat2[i][j]    
          rconc[i*dim+j] = 0;
          rseq[i*dim+j] = 0;
       }
@@ -160,7 +158,16 @@ int main(int argc, char* argv[]) {
    */
 
    //função que compara as saidas
-   checaMatriz(mat1,mat2,dim);
+   checaMatriz(mat1,mat2,dim) == 1 ? puts("As matrizes são iguais.") : puts("ERRO-- matrizes diferentes");
+   /*
+      case 1:
+         puts("As matrizes são iguais.");
+         break;
+      case 2:
+         puts("ERRO-- matrizes diferentes");
+         break;
+   }
+   */
 
    //liberacao da memoria
    GET_TIME(inicio);
@@ -176,3 +183,4 @@ int main(int argc, char* argv[]) {
 
    return 0;
 }
+
