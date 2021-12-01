@@ -33,7 +33,7 @@ void  multSeq(float *a, float *b,int n){
    for(int i=0;i<n;i++){
       for(int j=0;j<n;j++){
          for(int k=0;k<n;k++)
-         rseq[i*n+j] += a[i*n+k] * b[k*n+j];
+            rseq[i*n+j] += a[i*n+k] * b[k*n+j];
       }
    }
 
@@ -186,4 +186,5 @@ int main(int argc, char* argv[]) {
 
    return 0;
 }
+
 
