@@ -37,7 +37,7 @@ int contaSeq(float *vetor){
    for(long long int i=0; i<N; i++){
       if(vetor[i]>Li && vetor[i]<Ls){
          a++;    // se Li<x<Ls, acrescenta no contador
-         printf("%lf\n", vetor[i]);
+         //printf("%lf\n", vetor[i]);
       }
    }
    return a;
