@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define NTHREADS  6
+#define NTHREADS  5
 
 /* Variaveis globais, sendo X a variável de sincronização para as threads 2,3 e 4; e Y a variável de sincronização para a thread 1*/
 int x = 0;
@@ -19,21 +19,23 @@ int y = 0;
 pthread_mutex_t y_mutex;
 pthread_cond_t y_cond;
 
-void *tarefa (void *arg){
+//função que opera a lógica desejada (nome inspirado em outros exemplos e por falta de criatividade)
+void *tarefa (void *arg){                    
    long long int id = (long long int) arg; //identificador da thread
     switch(id){
-        case 1:
+        //thread 1
+        case 0:
             pthread_mutex_lock(&y_mutex);
             if (y < 3) { 
-                
+    
                 pthread_cond_wait(&y_cond, &y_mutex);
                 
             }
             printf("Volte sempre!\n");
             pthread_mutex_unlock(&y_mutex);
             break;
-
-        case 2:
+        //thread 2
+        case 1:
             pthread_mutex_lock(&x_mutex);
             if (x < 1) { 
                 
@@ -51,7 +53,8 @@ void *tarefa (void *arg){
             pthread_mutex_unlock(&x_mutex);
             break; 
 
-        case 3:
+        //thread 3
+        case 2:
             pthread_mutex_lock(&x_mutex);
             if (x < 1) { 
                
@@ -69,14 +72,15 @@ void *tarefa (void *arg){
             pthread_mutex_unlock(&x_mutex);
             break; 
 
-        case 4:
+        //thread 4
+        case 3:
             pthread_mutex_lock(&x_mutex);
             if (x < 1) { 
-                
+        
                 pthread_cond_wait(&x_cond, &x_mutex);
                 
             }
-            printf("Aceita um copo d’agua?.\n");
+            printf("Aceita um copo d’agua?\n");
             pthread_mutex_lock(&y_mutex);
             y++;
             pthread_mutex_unlock(&y_mutex);
@@ -85,9 +89,9 @@ void *tarefa (void *arg){
                 pthread_cond_signal(&y_cond);
             };
             pthread_mutex_unlock(&x_mutex);    
-             break; 
-
-        case 5:
+            break; 
+        //thread 5
+        case 4:
             printf("Seja bem-vindo!\n");
             pthread_mutex_lock(&x_mutex);
             x++;
@@ -95,8 +99,6 @@ void *tarefa (void *arg){
             pthread_cond_broadcast(&x_cond);
             break; 
 
-        case 6:
-            printf("TESTE TESTE");
     pthread_exit(NULL);
     }
 }
