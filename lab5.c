@@ -1,6 +1,6 @@
 /* Disciplina: Computacao Concorrente */
 /* Prof.: Silvana Rossetto */
-/* Laboratório: 4 */
+/* Laboratório: 5 */
 /* Codigo: Uso de variáveis de condição e suas operações básicas para sincronização por condição */
 
 /***** Condicao logica da aplicacao: a thread B so pode imprimir "Bye" depois que duas threads A imprimirem  "Hello"  ****/
