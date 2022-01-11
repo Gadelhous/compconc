@@ -13,6 +13,7 @@
 /* Variaveis globais */
 int bloqueadas = 0;
 int vetor[NTHREADS];
+int testeResultado[NTHREADS];
 pthread_mutex_t x_mutex;
 pthread_cond_t x_cond;
 
@@ -26,13 +27,14 @@ int soma(){
 }
 */
 
-//funcao para printar o vetor da iteração N
+/*funcao para printar o vetor da iteração N
 void pvet(){
   for(int i=0;i<NTHREADS;i++){
     printf("%d", vetor[i]);
     puts("");
   }
 }
+*/
 
 //funcao barreira
 void barreira(int nthreads,int b) {
@@ -55,6 +57,12 @@ void *tarefa (void *arg) {
   int id = *(int*)arg;
   int sl; //variável local para o somatório dos valores do vetor
   int contador = NTHREADS;
+  int *retorno;
+
+  //aloca o retorno
+  retorno = (int*) malloc(sizeof(int));
+  if(retorno==NULL) {exit(1);}
+
   //somando os elementos do vetor
   for(int j = 0; j<NTHREADS;j++){
     for(int i = 0;i<NTHREADS;i++){
@@ -69,16 +77,18 @@ void *tarefa (void *arg) {
     }*/
 
     vetor[id] = rand() % 10;
-    printf("%d\n", vetor[id]);
+    //printf("%d\n", vetor[id]);
     barreira(NTHREADS,id);
   }
-  pthread_exit(NULL);
+  *retorno = sl;
+  pthread_exit((void *) retorno);
 }
 
 /* Funcao principal */
 int main(int argc, char *argv[]) {
   pthread_t threads[NTHREADS];
   int id[NTHREADS];
+  int *retorno;
   //inicializando o vetor
   for(int i = 0;i<NTHREADS;i++){
     vetor[i] = rand() % 10;
@@ -97,7 +107,21 @@ int main(int argc, char *argv[]) {
 
   /* Espera todas as threads completarem */
   for (int i = 0; i < NTHREADS; i++) {
-    pthread_join(threads[i], NULL);
+    if(pthread_join(threads[i], (void**) &retorno)){
+      fprintf(stderr, "ERRO--pthread_create\n");
+      return 3;
+    }
+    //contador global
+    testeResultado[i] += *retorno;
+  }
+  //printf("%d", testeResultado/NTHREADS);
+  for(int i = 0; i<NTHREADS-1;i++){
+    if(testeResultado[i] != testeResultado[i+1]){
+      printf("ERRO -- as threads encontratam valores diferentes");
+    }else{
+      printf("As threads %d e %d encontraram %d como resultado.\n",i,i+1,testeResultado[i]);
+    }
+    
   }
   printf ("FIM.\n");
 
