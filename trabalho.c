@@ -1,4 +1,3 @@
-/* Multiplicacao de matriz-matriz (considerando matrizes quadradas) */
 #include<stdio.h>
 #include<stdlib.h>
 #include<pthread.h>
