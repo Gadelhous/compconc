@@ -13,6 +13,22 @@ typedef struct{
    long long int tam; //dimensão das threads
 } tArgs;
 
+//funcao barreira
+void barreira(int nthreads,int b) {
+  pthread_mutex_lock(&x_mutex); //inicio secao critica
+  if (bloqueadas == (nthreads-1)) { 
+    //ultima thread a chegar na barreira
+    pthread_cond_broadcast(&x_cond);
+    //pvet();
+    //printf("PASSOU!\n");
+    bloqueadas=0;
+  }else{
+    bloqueadas++;
+    pthread_cond_wait(&x_cond, &x_mutex);
+  }
+  pthread_mutex_unlock(&x_mutex); //fim secao critica
+}
+
 //lógica básica que troca a primeira posição com a posterior caso ela seja maior
 /*
 void troca(int a){
@@ -39,6 +55,87 @@ int checaVetor(vet *a, vet *b, int n){
 }
 */
 
+void sortFinal (int *v,int inicio,int meio,int fim){
+    int *aux,p1,p2,tam, i,j,k;
+    int fim1 =0 , fim2=0;
+    tam = fim - inicio   ;
+    p1=inicio;
+    p2=meio;
+    aux=(int *) malloc (tam*sizeof(int));
+    if(aux!= NULL){
+        for(i=0; i<tam;i++){
+            if(!fim1 && !fim2){
+                if(v[p1]<v[p2]){
+                    aux[i]=v[p1++];
+                    //printf("temp recebe %d na posição %d %d",aux[i],i,v[p1]);
+                    //printf("\n");
+                }
+                else{
+                    aux[i]=v[p2++];
+                    //printf("temp recebe %d na posição %d %d",aux[i],i,v[p2]);
+                    //printf("\n");
+                }
+                if(p1>=meio)
+                    fim1=1;
+                if(p2>=fim)
+                    fim2=1;
+            }else{
+                if(!fim1){
+                    aux[i]=v[p1++];
+                    //printf("temp recebe %d na posição %d %d",aux[i],i,v[p1]);
+                    //printf("\n");
+                }
+                else{
+                    aux[i]=v[p2++];
+                    //printf("temp recebe %d na posição %d %d",aux[i],i,v[p2]);
+                    //printf("\n");
+                }
+            }
+        }
+        for(j=0,k=inicio;j<tam;j++,k++){
+            v[k]=aux[j];
+            }
+
+    }
+    free(aux);
+}
+
+
+/*"merge" serguindo a lógica (início,meio,fim)     /////// (inicio1, final1, inicio2, final2)  ?como passar parâmetros de threads diferentes? -> fixando nthreads e dim em potências de 2
+void sortFinal(int a,int n1,int n2){
+   int b = n1+1;
+   int k = 0;
+   int tamaux = n2+1; 
+   int teste[tamaux];
+   while(a <= n1 ||  b <= n2){
+      if(a == n1){
+         teste[k] = vet1[b];
+         b++;
+         k++;
+      }
+      else{
+         if(b == n2){
+            teste[k] = vet1[a];
+            a++;
+            k++;
+         }
+         if(vet1[a]<=vet1[b]){
+            teste[k] = vet1[a];
+            a++;
+            k++;
+
+         }else{
+            teste[k] = vet1[b];
+            b++;
+            k++;
+         }
+         
+      }
+
+   }
+}
+*/
+
 //lógica que aplica um bubble sort fragmentado para cada thread
 void* sortConc(void *arg){
    tArgs *args = (tArgs*) arg;
@@ -46,7 +143,9 @@ void* sortConc(void *arg){
    int tamBloco = dim/nthreads;  //tamanho do bloco de cada threadd
    int ini = args->id * tamBloco; //elemento inicial do bloco da thread
    int fim; //elemento final(nao processado) do bloco da thread
+   int z;
    /* printf("Thread %d, tambloco %d, ini %d\n", args->id,tamBloco,ini); DEBUG*/
+   //int tamMerge 
    int aux;
    if(args->tam == nthreads-1) fim = dim;
    else fim = ini + tamBloco; //trata o resto se houver
@@ -80,42 +179,6 @@ void sortSeq(int v[]){
    }
 }
 
-//"merge" serguindo a lógica (inicio1, inicio2, final1, final2)  ?como passar parâmetros de threads diferentes?
-void sortFinal(int a, int b,int n1, int n2){
-   int k = 0;
-   int tamaux = n2; //n2?
-   int teste[tamaux];
-   while(a < n1 ||  b < n2){
-      if(a == n1){
-         teste[k] = vet1[b];
-         b++;
-         k++;
-      }
-      else{
-         if(b == n2){
-            teste[k] = vet1[a];
-            a++;
-            k++;
-         }
-         if(vet1[a]<=vet1[b]){
-            teste[k] = vet1[a];
-            a++;
-            k++;
-
-         }else{
-            teste[k] = vet1[b];
-            b++;
-            k++;
-         }
-         
-      }
-
-   }
-   for(int i=a; i<n2;i++){
-      vet1[i] = teste[i];
-   }
-   free(teste);
-}
 
 
 //fluxo principal
@@ -207,6 +270,9 @@ int main(int argc, char* argv[]) {
       pthread_join(*(tid+i), NULL);
    }
 
+   
+  // sortFinal(vet1);
+   
    GET_TIME(fim)   
    delta = fim - inicio;
    tConc = delta;
@@ -236,9 +302,11 @@ int main(int argc, char* argv[]) {
 
    //liberacao da memoria
    //GET_TIME(inicio);
-   free(vet1);
+   
+   //free(vet1);
    free(args);
    free(tid);
+   
    //GET_TIME(fim)   
    //delta = fim - inicio;
    //printf("Tempo finalizacao:%lf\n", delta);
