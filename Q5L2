@@ -1,0 +1,7 @@
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <semaphore.h>
+
+#define IMPRESSORA  1
+#define REQUISITORAS 5  
