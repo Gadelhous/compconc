@@ -1,7 +1,16 @@
-#include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <semaphore.h>
-
-#define IMPRESSORA  1
-#define REQUISITORAS 5  
+ /*
+ Uma maneira de estender a solução da questão 4( encontrada em https://github.com/Gadelhous/compconc/blob/main/Q4L2.java) seria adicionando esse método na classe principal
+ (a Q4Lista2, que possui a fila), e fazendo a chamada de dentro de uma impressora o requisitora assim que estivessem com posse do monitor.
+ */
+ public synchronized void requisicoes(){
+        System.out.println("A file tem " + this.fila.size() +" elementos."  );
+        this.notify();
+    }
+    
+    
+/*-----------------
+Comentários sobre as questões:
+Para a questão 4 foi utilizado um esqueleto de um problema leitor escritor (poderia ter sido um de produtor consumidor, mas como o utilizado em laboratórios mais era este,acabou sendo o escolhido)
+já que a impressora poderia seguir uma lógica de leitor,tendo apenas a imposição de que a fila não pode estar vazia; já as requisitoras,
+embora possuam um papel parecido com as escritoras possuem bem menos restrições,necessitando apenas que a fila não esteja lotada.
+-------------------*/
