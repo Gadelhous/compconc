@@ -1,4 +1,3 @@
-import java.util.Scanner;
 import java.util.concurrent.PriorityBlockingQueue;
 
 //Queue/PriorityQueue/PriorityBlockingQueue
@@ -15,7 +14,7 @@ class LE {
     // Entrada para impressora
     public synchronized void EntraLeitor (int id) {
         try {
-            while (limite == 0) {
+            while (Q4Lista2.contador == 0) {
                 System.out.println ("le.ImpressorBloqueado("+id+") : A fila de impressão está vazia!" );
                 wait();  //bloqueia pela condicao logica da aplicacao
             }
@@ -33,7 +32,7 @@ class LE {
     // Entrada para escritores
     public synchronized void EntraEscritor (int id) {
         try {
-            while ((limite > lab8.fila.size())) {
+            while ((Q4Lista2.contador > Q4Lista2.fila.size())) {
                 System.out.println ("le.requisitorBloqueado("+id+") : A fila está cheia!");
                 wait();  //bloqueia pela condicao logica da aplicacao
             }
@@ -74,6 +73,7 @@ class Requisitora extends Thread {
             for (;;) {
                 this.monitor.EntraEscritor(this.id);
                 this.requisita(" x ");
+                Q4Lista2.contador++;
                 this.monitor.SaiEscritor(this.id);
                 sleep(this.delay);
             }
@@ -83,8 +83,9 @@ class Requisitora extends Thread {
     }
 
     public void requisita(String r){
-        System.out.println("Eu, a requisitora " +this.id+ " estou adicionando uma requisição na fila");
-        lab8.fila.add(r);
+        //System.out.println("Eu, a requisitora " +this.id+ " estou adicionando uma requisição na fila");
+        Q4Lista2.fila.add(r);
+        Q4Lista2.contador++;
     }
 
 }
@@ -118,20 +119,21 @@ class Impressora extends Thread {
 
     private void imprime(){
         System.out.println("\nEstou Imprimindo");
-        lab8.fila.poll();
+        Q4Lista2.fila.poll();
+        Q4Lista2.contador--;
         notify();
     }
 }
 
 //--------------------------------------------------------
 // Classe principal
-class lab8{
+class Q4Lista2{
 
     static final int E = 3; //E = Requisitora
     static final int LESC = 1;  //LESC = Impressora;
 
     static int tamanho_máximo= 5;
-    static int contador = 0;
+    public static int contador = 0;
 
 
     static PriorityBlockingQueue<String> fila
@@ -142,6 +144,7 @@ class lab8{
     public void setFila(PriorityBlockingQueue<String> fila) {
         this.fila = fila;
     }
+
 
 
 
