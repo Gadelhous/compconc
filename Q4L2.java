@@ -32,7 +32,7 @@ class LE {
     // Entrada para escritores
     public synchronized void EntraEscritor (int id) {
         try {
-            while ((Q4Lista2.contador > Q4Lista2.fila.size())) {
+            while ((Q4Lista2.contador > Q4Lista2.tamanho_máximo)) {
                 System.out.println ("le.requisitorBloqueado("+id+") : A fila está cheia!");
                 wait();  //bloqueia pela condicao logica da aplicacao
             }
@@ -48,6 +48,9 @@ class LE {
         //System.out.println ("le.RequisitorSaindo("+id+")");
     }
 
+    public synchronized void notifica(){
+        this.notify();
+    }
 }
 
 
@@ -79,11 +82,11 @@ class Requisitora extends Thread {
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
-            return; }
+        }
     }
 
     public void requisita(String r){
-        //System.out.println("Eu, a requisitora " +this.id+ " estou adicionando uma requisição na fila");
+        System.out.println("Eu, a requisitora " +this.id+ " estou adicionando uma requisição na fila");
         Q4Lista2.fila.add(r);
         Q4Lista2.contador++;
     }
@@ -117,11 +120,10 @@ class Impressora extends Thread {
         } catch (InterruptedException e) { e.printStackTrace(); }
     }
 
-    private void imprime(){
+    private synchronized void imprime(){
         System.out.println("\nEstou Imprimindo");
         Q4Lista2.fila.poll();
         Q4Lista2.contador--;
-        notify();
     }
 }
 
@@ -153,11 +155,6 @@ class Q4Lista2{
         LE monitor = new LE();            // Monitor (objeto compartilhado entre leitores e escritores)
         Requisitora[] e = new Requisitora[E];   // Threads escritores
         Impressora[] lEsc = new Impressora[LESC];       // Threads leitoras/escritoras
-
-        /*inicia o log de saida
-        System.out.println ("import verificaLE");
-        System.out.println ("le = verificaLE.LE()");
-        */
 
 
         for (i=0; i<E; i++) {
